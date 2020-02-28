@@ -53,6 +53,8 @@ tar -xzvf VCTK-Corpus.tar.gz -C ../data/VCTK-Data
 
 We will use Mel-Cepstral coefficients(MCEPs) here.
 
+This example script is for the VCTK data which needs resampling to 16kHz, the script allows you to preprocess the data without resampling either.
+
 ```bash
 # VCTK-Data
 python preprocess.py --resample_rate 16000 \
@@ -77,7 +79,6 @@ python main.py --train_data_dir ../data/VCTK-Data/mc/train \
                --speakers p262 p272 p229 p232 \
                --num_speakers 4
 ```
-This saves your models and samples to `../data/VCTK-Data/`
 
 If you encounter an error such as:
 ```bash
@@ -115,5 +116,6 @@ python mel_cep_distance.py --convert_dir ../data/VCTK-Data/converted/125000 \
 ```
 
 # TODO:
--[ ] Fine tune the model
--[ ] Include sample set of results
+- [ ] Fine tune the model
+- [ ] Include sample set of results
+- [ ] Include VCC dataset download instructions/script
