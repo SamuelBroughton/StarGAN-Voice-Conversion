@@ -27,9 +27,7 @@ class ConvertDataset(object):
         self.src_wav_dir = f'{config.wav_dir}/{self.src_spk}'
 
         # Target speaker locations.
-        self.trg_mc_files = sorted(glob.glob(join(config.test_data_dir, f'{self.trg_spk}*.npy')))
         self.trg_spk_stats = np.load(join(config.train_data_dir, f'{self.trg_spk}_stats.npz'))
-        self.trg_wav_dir = f'{config.wav_dir}/{self.trg_spk}'
 
         self.logf0s_mean_src = self.src_spk_stats['log_f0s_mean']
         self.logf0s_std_src = self.src_spk_stats['log_f0s_std']
@@ -44,17 +42,12 @@ class ConvertDataset(object):
         spk_cat = to_categorical([self.spk_idx], num_classes=len(speakers))
         self.spk_c_trg = spk_cat
 
-    def get_batch_test_data(self, spk='src', batch_size=4):
+    def get_batch_test_data(self, batch_size=4):
         batch_data = []
         for i in range(batch_size):
-            if spk == 'trg':
-                mcfile = self.trg_mc_files[i]
-                filename = basename(mcfile).split('-')[-1]
-                wavfile_path = join(self.trg_wav_dir, filename.replace('npy', 'wav'))
-            else:
-                mcfile = self.src_mc_files[i]
-                filename = basename(mcfile).split('-')[-1]
-                wavfile_path = join(self.src_wav_dir, filename.replace('npy', 'wav'))
+            mcfile = self.src_mc_files[i]
+            filename = basename(mcfile).split('-')[-1]
+            wavfile_path = join(self.src_wav_dir, filename.replace('npy', 'wav'))
 
             batch_data.append(wavfile_path)
 
@@ -94,8 +87,7 @@ def convert(config):
                 print('---------------------------------------')
 
                 # Read a batch of testdata
-                src_test_wavfiles = data_loader.get_batch_test_data(spk='src', batch_size=config.num_converted_wavs)
-                trg_test_wavfiles = data_loader.get_batch_test_data(spk='trg', batch_size=config.num_converted_wavs)
+                src_test_wavfiles = data_loader.get_batch_test_data(batch_size=config.num_converted_wavs)
                 src_test_wavs = [load_wav(wavfile, sampling_rate) for wavfile in src_test_wavfiles]
 
                 with torch.no_grad():
@@ -136,7 +128,8 @@ def convert(config):
                                                  sampling_rate)
 
                         # SAVE COPY OF TARGET REFERENCE
-                        copy(trg_test_wavfiles[idx], target_dir)
+                        wav_num = wav_name.split('.')[0].split('_')[1]
+                        copy(f'{config.wav_dir}/{config.speakers[j]}/{config.speakers[j]}_{wav_num}.wav', target_dir)
 
 
 if __name__ == '__main__':
