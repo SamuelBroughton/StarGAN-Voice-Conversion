@@ -285,16 +285,10 @@ class Solver(object):
                 g_loss_id = torch.mean(torch.abs(mc_real - mc_fake_id))
 
                 # Backward and optimize.
-                # TODO: resolve after test moon_2_b8_vctk
-                # if (i+1) < 10**4:  # only calc. id mapping loss on first 10^4 iters.
                 g_loss = g_loss_fake \
                     + self.lambda_rec * g_loss_rec \
                     + self.lambda_cls * g_loss_cls \
                     + self.lambda_id * g_loss_id
-                # else:
-                #     g_loss = g_loss_fake \
-                #              + self.lambda_rec * g_loss_rec \
-                #              + self.lambda_cls * g_loss_cls
 
                 self.reset_grad()
                 g_loss.backward()

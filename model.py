@@ -16,14 +16,13 @@ class DownSampleBlock(nn.Module):
                                     stride=stride,
                                     padding=padding,
                                     bias=bias)
-
         self.batch_norm = nn.BatchNorm2d(dim_out, affine=True, track_running_stats=True)
-        self.relu = nn.ReLU(inplace=True)
+        self.glu = nn.GLU(dim=1)
 
     def forward(self, x):
         x = self.conv_layer(x)
         x = self.batch_norm(x)
-        x = self.relu(x)
+        x = self.glu(x)
 
         return x
 
@@ -39,14 +38,13 @@ class UpSampleBlock(nn.Module):
                                              stride=stride,
                                              padding=padding,
                                              bias=bias)
-
         self.batch_norm = nn.BatchNorm2d(dim_out, affine=True, track_running_stats=True)
-        self.relu = nn.ReLU(inplace=True)
+        self.glu = nn.GLU(dim=1)
 
     def forward(self, x):
         x = self.conv_layer(x)
         x = self.batch_norm(x)
-        x = self.relu(x)
+        x = self.glu(x)
 
         return x
 
@@ -58,35 +56,35 @@ class Generator(nn.Module):
 
         # Down-sampling layers.
         self.down_sample_1 = DownSampleBlock(dim_in=1,
-                                             dim_out=32,
+                                             dim_out=64,
                                              kernel_size=(3, 9),
                                              stride=(1, 1),
                                              padding=(1, 4),
                                              bias=False)
 
         self.down_sample_2 = DownSampleBlock(dim_in=32,
-                                             dim_out=64,
-                                             kernel_size=(4, 8),
-                                             stride=(2, 2),
-                                             padding=(1, 3),
-                                             bias=False)
-
-        self.down_sample_3 = DownSampleBlock(dim_in=64,
                                              dim_out=128,
                                              kernel_size=(4, 8),
                                              stride=(2, 2),
                                              padding=(1, 3),
                                              bias=False)
 
+        self.down_sample_3 = DownSampleBlock(dim_in=64,
+                                             dim_out=256,
+                                             kernel_size=(4, 8),
+                                             stride=(2, 2),
+                                             padding=(1, 3),
+                                             bias=False)
+
         self.down_sample_4 = DownSampleBlock(dim_in=128,
-                                             dim_out=64,
+                                             dim_out=128,
                                              kernel_size=(3, 5),
                                              stride=(1, 1),
                                              padding=(1, 2),
                                              bias=False)
 
         self.down_sample_5 = DownSampleBlock(dim_in=64,
-                                             dim_out=5,
+                                             dim_out=10,
                                              kernel_size=(9, 5),
                                              stride=(9, 1),
                                              padding=(1, 2),
@@ -100,21 +98,21 @@ class Generator(nn.Module):
                                          padding=(0, 2),
                                          bias=False)
 
-        self.up_sample_2 = UpSampleBlock(dim_in=68,
+        self.up_sample_2 = UpSampleBlock(dim_in=36,
                                          dim_out=128,
                                          kernel_size=(3, 5),
                                          stride=(1, 1),
                                          padding=(1, 2),
                                          bias=False)
 
-        self.up_sample_3 = UpSampleBlock(dim_in=132,
+        self.up_sample_3 = UpSampleBlock(dim_in=68,
                                          dim_out=64,
                                          kernel_size=(4, 8),
                                          stride=(2, 2),
                                          padding=(1, 3),
                                          bias=False)
 
-        self.up_sample_4 = UpSampleBlock(dim_in=68,
+        self.up_sample_4 = UpSampleBlock(dim_in=36,
                                          dim_out=32,
                                          kernel_size=(4, 8),
                                          stride=(2, 2),
@@ -122,7 +120,7 @@ class Generator(nn.Module):
                                          bias=False)
 
         # Deconv
-        self.deconv_layer = nn.ConvTranspose2d(in_channels=36,
+        self.deconv_layer = nn.ConvTranspose2d(in_channels=20,
                                                out_channels=1,
                                                kernel_size=(3, 9),
                                                stride=(1, 1),
@@ -165,7 +163,7 @@ class Generator(nn.Module):
 
 class Discriminator(nn.Module):
     """Discriminator network with PatchGAN."""
-    def __init__(self, num_speakers):
+    def __init__(self, num_speakers=4):
         super(Discriminator, self).__init__()
         i = num_speakers + 1
 
@@ -177,28 +175,28 @@ class Discriminator(nn.Module):
                                              padding=(1, 4),
                                              bias=False)
 
-        self.down_sample_2 = DownSampleBlock(dim_in=36,
+        self.down_sample_2 = DownSampleBlock(dim_in=20,
                                              dim_out=32,
                                              kernel_size=(3, 8),
                                              stride=(1, 1),
                                              padding=(1, 3),
                                              bias=False)
 
-        self.down_sample_3 = DownSampleBlock(dim_in=36,
+        self.down_sample_3 = DownSampleBlock(dim_in=20,
                                              dim_out=32,
                                              kernel_size=(3, 8),
                                              stride=(1, 1),
                                              padding=(1, 3),
                                              bias=False)
 
-        self.down_sample_4 = DownSampleBlock(dim_in=36,
+        self.down_sample_4 = DownSampleBlock(dim_in=20,
                                              dim_out=32,
                                              kernel_size=(3, 6),
                                              stride=(1, 1),
                                              padding=(1, 2),
                                              bias=False)
 
-        self.conv_layer = nn.Conv2d(in_channels=36,
+        self.conv_layer = nn.Conv2d(in_channels=20,
                                     out_channels=1,
                                     kernel_size=(36, 5),
                                     stride=(36, 1),
@@ -251,28 +249,28 @@ class DomainClassifier(nn.Module):
                                              padding=(5, 1),
                                              bias=False)
 
-        self.down_sample_2 = DownSampleBlock(dim_in=8,
+        self.down_sample_2 = DownSampleBlock(dim_in=4,
                                              dim_out=16,
                                              kernel_size=(4, 4),
                                              stride=(2, 2),
                                              padding=(1, 1),
                                              bias=False)
 
-        self.down_sample_3 = DownSampleBlock(dim_in=16,
+        self.down_sample_3 = DownSampleBlock(dim_in=8,
                                              dim_out=32,
                                              kernel_size=(4, 4),
                                              stride=(2, 2),
                                              padding=(0, 1),
                                              bias=False)
 
-        self.down_sample_4 = DownSampleBlock(dim_in=32,
+        self.down_sample_4 = DownSampleBlock(dim_in=16,
                                              dim_out=16,
                                              kernel_size=(3, 4),
                                              stride=(1, 2),
                                              padding=(1, 1),
                                              bias=False)
 
-        self.conv_layer = nn.Conv2d(in_channels=16, out_channels=4, kernel_size=(1, 4), stride=(1, 2), padding=(0, 1))
+        self.conv_layer = nn.Conv2d(in_channels=8, out_channels=4, kernel_size=(1, 4), stride=(1, 2), padding=(0, 1))
         self.pool = nn.AvgPool2d((1, 16))
         self.softmax = nn.Softmax()
 
@@ -308,7 +306,7 @@ if __name__ == '__main__':
 
     argv = parser.parse_args()
     train_dir = argv.train_dir
-    speakers_using = argv.speaker
+    speakers_using = argv.speakers
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

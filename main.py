@@ -45,9 +45,9 @@ if __name__ == '__main__':
 
     # Model configuration.
     parser.add_argument('--num_speakers', type=int, default=4, help='dimension of speaker labels')
-    parser.add_argument('--lambda_cls', type=float, default=1, help='weight for domain classification loss')
+    parser.add_argument('--lambda_cls', type=float, default=2, help='weight for domain classification loss')
     parser.add_argument('--lambda_rec', type=float, default=10, help='weight for reconstruction loss')
-    parser.add_argument('--lambda_gp', type=float, default=2.5, help='weight for gradient penalty')
+    parser.add_argument('--lambda_gp', type=float, default=5, help='weight for gradient penalty')
     parser.add_argument('--lambda_id', type=float, default=5, help='weight for id mapping loss')
     parser.add_argument('--sampling_rate', type=int, default=16000, help='sampling rate')
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=8, help='mini-batch size')
     parser.add_argument('--num_iters', type=int, default=200000, help='number of total iterations for training D')
     parser.add_argument('--num_iters_decay', type=int, default=100000, help='number of iterations for decaying lr')
-    parser.add_argument('--g_lr', type=float, default=0.0002, help='learning rate for G')
+    parser.add_argument('--g_lr', type=float, default=0.0001, help='learning rate for G')
     parser.add_argument('--d_lr', type=float, default=0.0001, help='learning rate for D')
     parser.add_argument('--c_lr', type=float, default=0.0001)
     parser.add_argument('--n_critic', type=int, default=5, help='number of D updates per each G update')
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_step', type=int, default=10)
     parser.add_argument('--sample_step', type=int, default=10000)
     parser.add_argument('--model_save_step', type=int, default=10000)
-    parser.add_argument('--lr_update_step', type=int, default=100000)
+    parser.add_argument('--lr_update_step', type=int, default=1000)
 
     config = parser.parse_args()
 
