@@ -94,12 +94,12 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/<PATH>/<TO>/<YOUR>/.conda/envs/<ENV>/li
 For example: restore model at step 125000 and specify the speakers.
 
 ```
-python convert.py --resume_iters 125000 \
+python convert.py --resume_model 120000 \
                   --num_speakers 4 \
                   --speakers p262 p272 p229 p232 \
                   --train_data_dir ../data/VCTK-Data/mc/train/ \
                   --test_data_dir ../data/VCTK-Data/mc/test/ \
-                  --wav_dir ../data/aca16sjb/VCTK-Data/VCTK-Corpus/wav16 \
+                  --wav_dir ../data/VCTK-Data/VCTK-Corpus/wav16 \
                   --model_save_dir ../data/VCTK-Data/models \
                   --convert_dir ../data/VCTK-Data/converted
 ```
@@ -110,7 +110,7 @@ This saves your converted flies to `../data/VCTK-Data/converted/`
 Calculate the Mel Cepstral Distortion of the reference speaker vs the synthesized speaker. Use `--spk_to_spk` tag to define multiple speaker to speaker folders generated with the convert script.
 
 ```
-python mel_cep_distance.py --convert_dir ../data/VCTK-Data/converted/125000 \
+python mel_cep_distance.py --convert_dir ../data/VCTK-Data/converted/120000 \
                            --spk_to_spk p262_to_p272 \
                            --output_csv p262_to_p272.csv
 ```
