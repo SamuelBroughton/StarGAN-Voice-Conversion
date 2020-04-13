@@ -4,7 +4,7 @@ import glob
 from os.path import join, basename
 import numpy as np
 
-min_length = 512   # Since we slice 512 frames from each utterance when training.
+min_length = 256   # Since we slice 256 frames from each utterance when training.
 
 
 def to_categorical(y, num_classes=None):

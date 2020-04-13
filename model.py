@@ -271,7 +271,7 @@ class DomainClassifier(nn.Module):
                                              bias=False)
 
         self.conv_layer = nn.Conv2d(in_channels=8, out_channels=4, kernel_size=(1, 4), stride=(1, 2), padding=(0, 1))
-        self.pool = nn.AvgPool2d((1, 16))
+        self.pool = nn.AvgPool2d((1, 8))  # 8 for 256 frames
         self.softmax = nn.Softmax()
 
     def forward(self, x):
